@@ -78,13 +78,15 @@ function Ball(game) {
       var relativeIntersectY = paddle.y - this.y;
       var normalizedRelativeIntersectionY = relativeIntersectY / (paddle.height / 2);
       var bounceAngle = normalizedRelativeIntersectionY * MAX_BOUNCE_ANGLE;
-      this.vx = (paddle.side == 1 ? 1 : -1) * ballSpeed * Math.cos(bounceAngle);
-      this.vy = ballSpeed * -Math.sin(bounceAngle);
+
       // my own logic to introduce some randomness occasionally
       if (random(1) < randomBounceRate) {
-        this.bounceAngle += random([-1, 1]) * random(PI / 6);
-        this.bounceAngle = constrain(this.bounceAngle, -MAX_BOUNCE_ANGLE, MAX_BOUNCE_ANGLE);
+        bounceAngle += random([-1, 1]) * random(PI / 12, PI / 6);
+        bounceAngle = constrain(bounceAngle, -MAX_BOUNCE_ANGLE, MAX_BOUNCE_ANGLE);
       }
+
+      this.vx = (paddle.side == 1 ? 1 : -1) * ballSpeed * Math.cos(bounceAngle);
+      this.vy = ballSpeed * -Math.sin(bounceAngle);
     }
   }
 }

@@ -8,7 +8,7 @@ var curHighestScore = 0;
 var isPersonPlaying = false;
 
 var ballSpeed = 5;
-var randomBounceRate = 0.3;
+var randomBounceRate = 0.2;
 
 var ballSpeedP, ballSpeedSlider;
 
