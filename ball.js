@@ -31,8 +31,8 @@ function Ball(game) {
         // this.reset();
         this.game.done = true;
         // take away points the longer it travels -- we want it to be very efficient
-        // the divide by 2 is just to wait it a little from the actual score idk lol
-        this.game.brain.score -= this.game.paddleDistanceTraveled / 2;
+        // the divide by 4 is just to weight it a little from the actual score idk lol
+        this.game.brain.score -= this.game.paddleDistanceTraveled / 4;
       }
     }
   }
