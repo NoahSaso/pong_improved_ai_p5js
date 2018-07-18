@@ -4,7 +4,6 @@ var Architect = neataptic.architect;
 
 var neat, network;
 
-var GAME_COUNT = 1000;
 var MUTATION_RATE = 0.3;
 var ELITISM_RATE = 0.1;
 
@@ -13,7 +12,10 @@ var USE_TRAINED_POP = false; // use already trained population
 // inputs: vertical displacement of ball from center of paddle, horizontal displacement of ball from center of paddle, ball horizontal velocity, ball vertical velocity, paddle velocity (5)
 // outputs: vertical paddle velocity (1)
 
-function initNeat() {
+function initNeat(isResetting) {
+  if (isResetting) {
+    var oldPop = neat.population;
+  }
   // hidden layer nodes rule of thumb: inputs + outputs = 5 + 1 = 6
   network = new Architect.Perceptron(5, 6, 1);
   neat = new Neat(
@@ -36,16 +38,22 @@ function initNeat() {
         Methods.mutation.ADD_BACK_CONN,
         Methods.mutation.SUB_BACK_CONN
       ],
-      popsize: GAME_COUNT,
+      popsize: populationSize,
       mutationRate: MUTATION_RATE,
-      elitism: Math.round(ELITISM_RATE * GAME_COUNT),
+      elitism: Math.round(ELITISM_RATE * populationSize),
       network: network
     }
   );
-  if (USE_TRAINED_POP) {
+  if (isResetting) {
+    // copy previous population into new population
+    var smallerSize = populationSize < oldPop.length ? populationSize : oldPop.length;
+    for (var i = 0; i < smallerSize; i++) {
+      neat.population[i] = oldPop[i];
+    }
+  } else if (USE_TRAINED_POP) {
     // Convert the json to an array of networks
     var newPop = [];
-    for (var i = 0; i < GAME_COUNT; i++) {
+    for (var i = 0; i < populationSize; i++) {
       var json = trainedPop[i % trainedPop.length];
       newPop[i] = neataptic.Network.fromJSON(json);
     }

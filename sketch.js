@@ -1,7 +1,5 @@
 var games = [];
 
-var remainingAlive = GAME_COUNT;
-
 var highestScore = 0;
 var curHighestScore = 0;
 
@@ -10,11 +8,24 @@ var isPersonPlaying = false;
 var ballSpeed = 6;
 var randomBounceRate = 0.2;
 
+var populationSize = 1000;
+
+var remainingAlive = populationSize;
+
 var ballSpeedP, ballSpeedSlider;
+var populationSizeP, populationSizeSlider;
+
+var previousPopulation;
 
 var configChanged = function() {
   ballSpeed = ballSpeedSlider.value();
   ballSpeedP.html('Ball Speed: ' + ballSpeed);
+  if (populationSize != populationSizeSlider.value()) {
+    populationSize = populationSizeSlider.value();
+    populationSizeP.html('Population Size: ' + populationSize);
+    initNeat(true);
+    endEvaluation();
+  }
 }
 
 function beginHumanPlay() {
@@ -22,7 +33,7 @@ function beginHumanPlay() {
   if (!USE_TRAINED_POP) {
     // load my trained population (defined in trainedpop.js)
     var newPop = [];
-    for (var i = 0; i < GAME_COUNT; i++) {
+    for (var i = 0; i < populationSize; i++) {
       var json = trainedPop[i % trainedPop.length];
       newPop[i] = neataptic.Network.fromJSON(json);
     }
@@ -48,6 +59,13 @@ function setup() {
   ballSpeedP = createP('Ball Speed: ' + ballSpeed);
   ballSpeedSlider = createSlider(1, 20, ballSpeed);
   ballSpeedSlider.changed(configChanged);
+
+  populationSizeP = createP('Population Size: ' + populationSize);
+  populationSizeSlider = createSlider(2, 10000, populationSize);
+  populationSizeSlider.changed(configChanged);
+
+  button = createButton('Next Generation');
+  button.mousePressed(endEvaluation);
 
   button = createButton('Save Current Population');
   button.mousePressed(saveCurrentPopulation);
