@@ -82,7 +82,7 @@ function Ball(game) {
       this.vy = ballSpeed * -Math.sin(bounceAngle);
       // my own logic to introduce some randomness occasionally
       if (random(1) < randomBounceRate) {
-        this.bounceAngle += random([-1, 1]) * random(15, 30);
+        this.bounceAngle += random([-1, 1]) * random(PI / 6);
         this.bounceAngle = constrain(this.bounceAngle, -MAX_BOUNCE_ANGLE, MAX_BOUNCE_ANGLE);
       }
     }
