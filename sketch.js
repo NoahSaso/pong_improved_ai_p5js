@@ -3,7 +3,8 @@ var games = [];
 var highestScore = 0;
 var curHighestScore = 0;
 
-var isPersonPlaying = false;
+var isPersonPlaying = false,
+  isAIPlaying = false;
 
 var ballSpeed = 6;
 var randomBounceRate = 0.2;
@@ -29,6 +30,7 @@ var configChanged = function() {
 }
 
 function beginHumanPlay() {
+  isAIPlaying = false;
   isPersonPlaying = true;
   if (!USE_TRAINED_POP) {
     // load my trained population (defined in trainedpop.js)
@@ -39,6 +41,20 @@ function beginHumanPlay() {
     }
     neat.population = newPop;
   }
+  neat.sort();
+  games = [new Game(neat.population[0])];
+}
+
+function beginAIPlay() {
+  isPersonPlaying = false;
+  isAIPlaying = true;
+  // load my trained population (defined in trainedpop.js)
+  var newPop = [];
+  for (var i = 0; i < populationSize; i++) {
+    var json = trainedPop[i % trainedPop.length];
+    newPop[i] = neataptic.Network.fromJSON(json);
+  }
+  neat.population = newPop;
   neat.sort();
   games = [new Game(neat.population[0])];
 }
@@ -70,6 +86,9 @@ function setup() {
   button = createButton('Save Current Population');
   button.mousePressed(saveCurrentPopulation);
 
+  button = createButton('Watch AI vs. AI');
+  button.mousePressed(beginAIPlay);
+
   button = createButton('Play Trained AI');
   button.mousePressed(beginHumanPlay);
 
@@ -98,7 +117,7 @@ function draw() {
 
   infoP.html(infoPHTML());
 
-  if (!isPersonPlaying && (allHaveFinished || curHighestScore >= 300)) {
+  if (!isPersonPlaying && !isAIPlaying && (allHaveFinished || curHighestScore >= 300)) {
     endEvaluation();
     return;
   }

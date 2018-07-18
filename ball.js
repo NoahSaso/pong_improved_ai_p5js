@@ -25,7 +25,7 @@ function Ball(game) {
     }
     // if ball left barrier 10 pixels to the left of left paddle left barrier or ball right barrier 10 pixels to the right of right paddle right barrier
     if (this.x - this.size / 2 <= this.game.leftPaddle.x - this.game.leftPaddle.width / 2 - 10 || this.x + this.size / 2 >= this.game.rightPaddle.x + this.game.rightPaddle.width / 2 + 10) {
-      if (isPersonPlaying) {
+      if (isPersonPlaying || isAIPlaying) {
         this.game.brain.score = 0;
         this.reset();
       } else {
