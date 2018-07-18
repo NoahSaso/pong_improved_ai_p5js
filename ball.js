@@ -64,6 +64,10 @@ function Ball(game) {
     // check ball bottom barrier greater than paddle top barrier and ball top barrier less than paddle bottom barrier
     let withinPaddleY = this.y + this.size / 2 > paddle.y - paddle.height / 2 && this.y - this.size / 2 < paddle.y + paddle.height / 2;
     if (withinPaddleX && withinPaddleY) {
+      // increase score when paddle hits ball
+      // add to brain score so neural network algorithm can later decide how good this game was
+      this.game.brain.score += 500;
+
       // // switch x direction and increase ball y velocity by a factor of the paddle's y velocity
       // this.vx *= -1;
       // if (paddle.vy != 0) {

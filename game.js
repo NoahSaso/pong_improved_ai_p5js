@@ -30,9 +30,6 @@ function Game(genome) {
       this.ball.checkCollide(this.rightPaddle);
     }
 
-    // add to brain score so neural network algorithm can later decide how good this bird was
-    this.brain.score += 1;
-
   }
 
 }

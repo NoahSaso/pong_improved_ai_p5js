@@ -3,7 +3,7 @@ var games = [];
 var remainingAlive = GAME_COUNT;
 
 var highestScore = 0;
-var currScore = 0;
+var curHighestScore = 0;
 
 var isPersonPlaying = false;
 
@@ -31,7 +31,7 @@ function beginHumanPlay() {
 }
 
 function infoPHTML() {
-  return `Generation: ${neat.generation}<br>Highest Score: ${highestScore}<br>Current Score: ${currScore}<br>Remaining Alive: ${remainingAlive}`;
+  return `Generation: ${neat.generation}<br>Highest Score: ${highestScore}<br>Current Highest Score: ${curHighestScore}<br>Remaining Alive: ${remainingAlive}`;
 }
 
 function setup() {
@@ -59,15 +59,18 @@ function setup() {
 function draw() {
   background(51);
 
+  curHighestScore = 0;
   remainingAlive = 0;
   var allHaveFinished = true;
   for (var i = 0; i < games.length; i++) {
     if (!games[i].done) {
       remainingAlive++;
       allHaveFinished = false;
-      currScore = games[i].brain.score;
-      if (currScore > highestScore) {
-        highestScore = currScore;
+      if (games[i].brain.score > curHighestScore) {
+        curHighestScore = games[i].brain.score;
+      }
+      if (curHighestScore > highestScore) {
+        highestScore = curHighestScore;
       }
     }
   }
@@ -75,7 +78,7 @@ function draw() {
   infoP.html(infoPHTML());
 
   // end some time
-  if (!isPersonPlaying && (allHaveFinished || currScore >= 2500)) {
+  if (!isPersonPlaying && (allHaveFinished || curHighestScore >= 25000)) {
     endEvaluation();
     return;
   }
