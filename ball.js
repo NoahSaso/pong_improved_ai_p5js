@@ -1,16 +1,15 @@
 var MAX_BOUNCE_ANGLE;
-var BALL_SPEED = 5;
-var RANDOM_BOUNCE_RATE = 0.3;
 
 function Ball(game) {
   this.x = width / 2;
   this.y = height / 2;
   // random direction
-  this.vx = random([-1, 1]) * BALL_SPEED;
+  this.vx = random([-1, 1]) * ballSpeed;
   this.vy = random([-1, 1]) * random(2);
   this.size = 8;
 
-  MAX_BOUNCE_ANGLE = PI / 3;
+  // put here because PI is defined by p5js, not available at top of file outside of function
+  MAX_BOUNCE_ANGLE = 7 * PI / 18; // 70 degrees
 
   this.game = game;
 
@@ -33,7 +32,7 @@ function Ball(game) {
         this.game.done = true;
         // take away points the longer it travels -- we want it to be very efficient
         // the divide by 2 is just to wait it a little from the actual score idk lol
-        this.game.brain.score = - this.game.paddleDistanceTraveled / 2;
+        this.game.brain.score -= this.game.paddleDistanceTraveled / 2;
       }
     }
   }
@@ -41,7 +40,7 @@ function Ball(game) {
   this.reset = function() {
     this.x = width / 2;
     this.y = height / 2;
-    this.vx = random([-1, 1]) * BALL_SPEED;
+    this.vx = random([-1, 1]) * ballSpeed;
     this.vy = random([-1, 1]) * random(2);
     this.game.leftPaddle.y = height / 2;
     this.game.leftPaddle.vy = 0;
@@ -75,10 +74,10 @@ function Ball(game) {
       var relativeIntersectY = paddle.y - this.y;
       var normalizedRelativeIntersectionY = relativeIntersectY / (paddle.height / 2);
       var bounceAngle = normalizedRelativeIntersectionY * MAX_BOUNCE_ANGLE;
-      this.vx = (paddle.side == 1 ? 1 : -1) * BALL_SPEED * Math.cos(bounceAngle);
-      this.vy = BALL_SPEED * -Math.sin(bounceAngle);
+      this.vx = (paddle.side == 1 ? 1 : -1) * ballSpeed * Math.cos(bounceAngle);
+      this.vy = ballSpeed * -Math.sin(bounceAngle);
       // my own logic to introduce some randomness occasionally
-      if (random(1) < RANDOM_BOUNCE_RATE) {
+      if (random(1) < randomBounceRate) {
         this.bounceAngle += random([-1, 1]) * random(10);
         this.bounceAngle = constrain(this.bounceAngle, -MAX_BOUNCE_ANGLE, MAX_BOUNCE_ANGLE);
       }

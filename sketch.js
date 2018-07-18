@@ -7,6 +7,16 @@ var currScore = 0;
 
 var isPersonPlaying = false;
 
+var ballSpeed = 5;
+var randomBounceRate = 0.3;
+
+var ballSpeedP, ballSpeedSlider;
+
+var configChanged = function() {
+  ballSpeed = ballSpeedSlider.value();
+  ballSpeedP.html('Ball Speed: ' + ballSpeed);
+}
+
 function beginHumanPlay() {
   isPersonPlaying = true;
   // load my trained population (defined in trainedpop.js)
@@ -31,6 +41,11 @@ function setup() {
   initNeat();
 
   infoP = createP(infoPHTML());
+
+  // config
+  ballSpeedP = createP('Ball Speed: ' + ballSpeed);
+  ballSpeedSlider = createSlider(1, 20, ballSpeed);
+  ballSpeedSlider.changed(configChanged);
 
   button = createButton('Save Current Population');
   button.mousePressed(saveCurrentPopulation);
