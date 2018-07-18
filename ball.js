@@ -31,8 +31,8 @@ function Ball(game) {
         // this.reset();
         this.game.done = true;
         // take away points the longer it travels -- we want it to be very efficient
-        // the divide by 4 is just to weight it a little from the actual score idk lol
-        this.game.brain.score -= this.game.paddleDistanceTraveled / 4;
+        // the divide by 8 is just to weight it a little from the actual score idk lol
+        //this.game.brain.score -= this.game.paddleDistanceTraveled / 8;
       }
     }
   }
@@ -66,7 +66,7 @@ function Ball(game) {
     if (withinPaddleX && withinPaddleY) {
       // increase score when paddle hits ball
       // add to brain score so neural network algorithm can later decide how good this game was
-      this.game.brain.score += 500;
+      this.game.brain.score += 1;
 
       // // switch x direction and increase ball y velocity by a factor of the paddle's y velocity
       // this.vx *= -1;
@@ -82,7 +82,7 @@ function Ball(game) {
       this.vy = ballSpeed * -Math.sin(bounceAngle);
       // my own logic to introduce some randomness occasionally
       if (random(1) < randomBounceRate) {
-        this.bounceAngle += random([-1, 1]) * random(10);
+        this.bounceAngle += random([-1, 1]) * random(15, 30);
         this.bounceAngle = constrain(this.bounceAngle, -MAX_BOUNCE_ANGLE, MAX_BOUNCE_ANGLE);
       }
     }

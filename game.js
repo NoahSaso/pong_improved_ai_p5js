@@ -6,7 +6,7 @@ function Game(genome) {
 
   this.ball = new Ball(this);
   this.leftPaddle = new Paddle(30, 1, this);
-  this.rightPaddle = new Paddle(470, 2, this, isPersonPlaying);
+  this.rightPaddle = new Paddle(470, 2, this);
 
   this.paddleDistanceTraveled = 0;
 

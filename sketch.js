@@ -19,13 +19,15 @@ var configChanged = function() {
 
 function beginHumanPlay() {
   isPersonPlaying = true;
-  // load my trained population (defined in trainedpop.js)
-  var newPop = [];
-  for(var i = 0; i < GAME_COUNT; i++){
-    var json = trainedPop[i % trainedPop.length];
-    newPop[i] = neataptic.Network.fromJSON(json);
+  if (!USE_TRAINED_POP) {
+    // load my trained population (defined in trainedpop.js)
+    var newPop = [];
+    for (var i = 0; i < GAME_COUNT; i++) {
+      var json = trainedPop[i % trainedPop.length];
+      newPop[i] = neataptic.Network.fromJSON(json);
+    }
+    neat.population = newPop;
   }
-  neat.population = newPop;
   neat.sort();
   games = [new Game(neat.population[0])];
 }
@@ -63,22 +65,22 @@ function draw() {
   remainingAlive = 0;
   var allHaveFinished = true;
   for (var i = 0; i < games.length; i++) {
+    if (games[i].brain.score > curHighestScore) {
+      curHighestScore = games[i].brain.score;
+    }
+    if (curHighestScore > highestScore) {
+      highestScore = curHighestScore;
+    }
     if (!games[i].done) {
       remainingAlive++;
       allHaveFinished = false;
-      if (games[i].brain.score > curHighestScore) {
-        curHighestScore = games[i].brain.score;
-      }
-      if (curHighestScore > highestScore) {
-        highestScore = curHighestScore;
-      }
     }
   }
 
   infoP.html(infoPHTML());
 
   // end some time
-  if (!isPersonPlaying && (allHaveFinished || curHighestScore >= 25000)) {
+  if (!isPersonPlaying && (allHaveFinished || curHighestScore >= 100)) {
     endEvaluation();
     return;
   }

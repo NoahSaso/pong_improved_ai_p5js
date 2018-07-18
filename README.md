@@ -10,6 +10,6 @@ Mess with it here:
 Instructions
 ============
 
-Click `Play Trained AI` button at the bottom of the page to play my trained AI. I don't think anyone can beat it but please try.
+Click `Play Trained AI` button at the bottom of the page to play my trained AI.
 
 The right paddle will follow your mouse, and the left paddle is controlled by the AI.
