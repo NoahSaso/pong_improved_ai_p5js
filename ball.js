@@ -1,11 +1,12 @@
 var MAX_BOUNCE_ANGLE;
+var BASE_BALL_SPEED = 2;
 
 function Ball(game) {
   this.x = width / 2;
   this.y = height / 2;
   // random direction
-  this.vx = random([-1, 1]) * ballSpeed;
-  this.vy = random([-1, 1]) * random(2);
+  this.vx = random([-BASE_BALL_SPEED, BASE_BALL_SPEED]);
+  this.vy = random(-0.5, 0.5);
   this.size = 8;
 
   // put here because PI is defined by p5js, not available at top of file outside of function
@@ -31,8 +32,9 @@ function Ball(game) {
         // this.reset();
         this.game.done = true;
         // take away points the longer it travels -- we want it to be very efficient
-        // the divide by 8 is just to weight it a little from the actual score idk lol
-        //this.game.brain.score -= this.game.paddleDistanceTraveled / 8;
+        // divide by 1000 because in the extreme condition that the paddle travels 500 pixels (the height of the screen),
+        // then reduce the score by half a point to discourage from doing that
+        this.game.brain.score -= this.game.paddleDistanceTraveled / 1000.0;
       }
     }
   }
@@ -40,8 +42,8 @@ function Ball(game) {
   this.reset = function() {
     this.x = width / 2;
     this.y = height / 2;
-    this.vx = random([-1, 1]) * ballSpeed;
-    this.vy = random([-1, 1]) * random(2);
+    this.vx = random([-2, 2]);
+    this.vy = random(-0.5, 0.5);
     this.game.leftPaddle.y = height / 2;
     this.game.leftPaddle.vy = 0;
     this.game.rightPaddle.y = height / 2;
@@ -81,12 +83,12 @@ function Ball(game) {
 
       // my own logic to introduce some randomness occasionally
       if (random(1) < randomBounceRate) {
-        bounceAngle += random([-1, 1]) * random(PI / 12, PI / 6);
+        bounceAngle += random([-1, 1]) * random(PI / 12);
         bounceAngle = constrain(bounceAngle, -MAX_BOUNCE_ANGLE, MAX_BOUNCE_ANGLE);
       }
 
-      this.vx = (paddle.side == 1 ? 1 : -1) * ballSpeed * Math.cos(bounceAngle);
-      this.vy = ballSpeed * -Math.sin(bounceAngle);
+      this.vx = (paddle.side == 1 ? 1 : -1) * BASE_BALL_SPEED * Math.cos(bounceAngle);
+      this.vy = BASE_BALL_SPEED * -Math.sin(bounceAngle);
     }
   }
 }

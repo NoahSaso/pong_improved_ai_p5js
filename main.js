@@ -6,9 +6,9 @@ var neat, network;
 
 var GAME_COUNT = 1000;
 var MUTATION_RATE = 0.3;
-var ELITISM_RATE = 0.01;
+var ELITISM_RATE = 0.1;
 
-var USE_TRAINED_POP = false; // use already trained population
+var USE_TRAINED_POP = true; // use already trained population
 
 // inputs: vertical displacement of ball from center of paddle, horizontal displacement of ball from center of paddle, ball horizontal velocity, ball vertical velocity, paddle velocity (5)
 // outputs: vertical paddle velocity (1)
@@ -45,7 +45,7 @@ function initNeat() {
   if (USE_TRAINED_POP) {
     // Convert the json to an array of networks
     var newPop = [];
-    for(var i = 0; i < GAME_COUNT; i++){
+    for (var i = 0; i < GAME_COUNT; i++) {
       var json = trainedPop[i % trainedPop.length];
       newPop[i] = neataptic.Network.fromJSON(json);
     }

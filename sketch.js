@@ -7,7 +7,7 @@ var curHighestScore = 0;
 
 var isPersonPlaying = false;
 
-var ballSpeed = 5;
+var ballSpeed = 6;
 var randomBounceRate = 0.2;
 
 var ballSpeedP, ballSpeedSlider;
@@ -65,8 +65,9 @@ function draw() {
   remainingAlive = 0;
   var allHaveFinished = true;
   for (var i = 0; i < games.length; i++) {
-    if (games[i].brain.score > curHighestScore) {
-      curHighestScore = games[i].brain.score;
+    var score = Math.round(games[i].brain.score);
+    if (score > curHighestScore) {
+      curHighestScore = score;
     }
     if (curHighestScore > highestScore) {
       highestScore = curHighestScore;
@@ -79,14 +80,15 @@ function draw() {
 
   infoP.html(infoPHTML());
 
-  // end some time
-  if (!isPersonPlaying && (allHaveFinished || curHighestScore >= 100)) {
+  if (!isPersonPlaying && (allHaveFinished || curHighestScore >= 300)) {
     endEvaluation();
     return;
   }
 
   for (var i = 0; i < games.length; i++) {
-    games[i].update();
+    for (var j = 0; j < ballSpeed; j++) {
+      games[i].update();
+    }
     games[i].show();
   }
 }

@@ -11,25 +11,27 @@ function Game(genome) {
   this.paddleDistanceTraveled = 0;
 
   // show all (square)
-  this.show = function() {
-    if (!this.done) {
-      this.ball.show();
-      this.leftPaddle.show();
-      this.rightPaddle.show();
+  this.show = function () {
+    if (this.done) {
+      return;
     }
+
+    this.ball.show();
+    this.leftPaddle.show();
+    this.rightPaddle.show();
   }
 
   // update physics and check if dead
   this.update = function () {
-
-    if (!this.done) {
-      this.ball.update();
-      this.leftPaddle.update();
-      this.rightPaddle.update();
-      this.ball.checkCollide(this.leftPaddle);
-      this.ball.checkCollide(this.rightPaddle);
+    if (this.done) {
+      return;
     }
 
+    this.ball.update();
+    this.leftPaddle.update();
+    this.rightPaddle.update();
+    this.ball.checkCollide(this.leftPaddle);
+    this.ball.checkCollide(this.rightPaddle);
   }
 
 }
