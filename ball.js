@@ -34,9 +34,9 @@ function Ball(game) {
         // this.game.done = true;
         // increase other paddle's brain score if won because it's good
         if (diedOnLeft) {
-          this.game.leftBrain.score -= 100.0;
-        } else if (diedOnRight && this.game.leftPaddle.hasHit && this.game.leftPaddle.distanceTraveled > 0) {
-          this.game.leftBrain.score += 100.0;
+          this.game.leftBrain.score -= 50.0;
+        } else if (diedOnRight && this.game.leftPaddle.hasHit && this.game.rightPaddle.hasHit && this.game.leftPaddle.distanceTraveled > 0) {
+          this.game.leftBrain.score += 50.0;
         }
         updateHighestScore(this.game.leftBrain.score);
         this.reset();
