@@ -8,8 +8,6 @@ function Game(genome) {
   this.leftPaddle = new Paddle(30, 1, this);
   this.rightPaddle = new Paddle(470, 2, this);
 
-  this.paddleDistanceTraveled = 0;
-
   // show all (square)
   this.show = function () {
     if (this.done) {

@@ -8,6 +8,8 @@ function Paddle(x, side, game) {
 
   this.game = game;
 
+  this.stoppedFor = 0;
+
   this.update = function () {
     // W S for left, up down for right
     // let down = keyIsDown(this.side == 1 ? 83 : DOWN_ARROW);
@@ -21,7 +23,18 @@ function Paddle(x, side, game) {
 
       var newY = constrain(this.y + this.vy, this.height / 2, height - this.height / 2);
 
-      this.game.paddleDistanceTraveled += Math.abs(newY - this.y);
+      var diff = Math.abs(newY - this.y);
+
+      if (diff < 1) {
+        this.stoppedFor++;
+      } else {
+        this.stoppedFor = 0;
+      }
+
+      // take away points the longer it travels -- we want it to be very efficient
+      // divide by 1000 because in the extreme condition that the paddle travels 500 pixels (the height of the screen),
+      // then reduce the score by half a point to discourage from doing that
+      this.game.brain.score -= diff / 1000.0;
     }
 
     this.y = newY;
@@ -32,7 +45,7 @@ function Paddle(x, side, game) {
     rect(this.x, this.y, this.width, this.height);
   }
 
-  // inputs: vertical displacement of ball from center of paddle, horizontal displacement of ball from center of paddle, ball horizontal velocity, ball vertical velocity, paddle velocity
+  // inputs: vertical displacement of ball from center of paddle, horizontal displacement of ball from center of paddle, ball horizontal velocity, ball vertical velocity, paddle velocity, other paddle vertical displacement (6)
 
   this.detect = function () {
     // multiply some by negative if left so that the ai does not depend on the side to learn (e.g. a ball in between the paddles is a positive number to the ai all the time)
@@ -41,7 +54,8 @@ function Paddle(x, side, game) {
       (this.side == 1 ? -1 : 1) * (this.x - this.game.ball.x), // horizontal displacement of ball from center of paddle
       (this.side == 1 ? -1 : 1) * this.game.ball.vx, // ball horizontal velocity
       (this.side == 1 ? -1 : 1) * this.game.ball.vy, // ball vertical velocity
-      this.vy // paddle velocity
+      this.vy, // paddle velocity,
+      (this.side == 1 ? this.game.rightPaddle : this.game.leftPaddle).y - this.y // other paddle vertical displacement
     ];
     return inputs;
   }

@@ -7,19 +7,19 @@ var neat, network;
 var MUTATION_RATE = 0.3;
 var ELITISM_RATE = 0.1;
 
-var USE_TRAINED_POP = false; // use already trained population
+var USE_TRAINED_POP = true; // use already trained population
 
-// inputs: vertical displacement of ball from center of paddle, horizontal displacement of ball from center of paddle, ball horizontal velocity, ball vertical velocity, paddle velocity (5)
+// inputs: vertical displacement of ball from center of paddle, horizontal displacement of ball from center of paddle, ball horizontal velocity, ball vertical velocity, paddle velocity, other paddle vertical displacement (6)
 // outputs: vertical paddle velocity (1)
 
 function initNeat(isResetting) {
   if (isResetting) {
     var oldPop = neat.population;
   }
-  // hidden layer nodes rule of thumb: inputs + outputs = 5 + 1 = 6
-  network = new Architect.Perceptron(5, 6, 1);
+  // hidden layer nodes rule of thumb: inputs + outputs = 6 + 1 = 7
+  network = new Architect.Perceptron(6, 7, 1);
   neat = new Neat(
-    5,
+    6,
     1,
     null,
     {
@@ -51,14 +51,19 @@ function initNeat(isResetting) {
       neat.population[i] = oldPop[i];
     }
   } else if (USE_TRAINED_POP) {
-    // Convert the json to an array of networks
-    var newPop = [];
-    for (var i = 0; i < populationSize; i++) {
-      var json = trainedPop[i % trainedPop.length];
-      newPop[i] = neataptic.Network.fromJSON(json);
-    }
-    neat.population = newPop;
+    getPopulationFromFile();
   }
+}
+
+function getPopulationFromFile() {
+  // Convert the json to an array of networks
+  var newPop = [];
+  for (var i = 0; i < populationSize; i++) {
+    var json = trainedPop.data[i % trainedPop.data.length]; // use modulo to loop back to beginning of array in case population size is too big
+    newPop[i] = neataptic.Network.fromJSON(json);
+  }
+  neat.population = newPop;
+  neat.generation = trainedPop.gen;
 }
 
 function startEvaluation() {
@@ -72,27 +77,35 @@ function startEvaluation() {
 }
 
 function endEvaluation() {
-  neat.sort();
-  var newGames = [];
+  if (isPersonPlaying || isAIPlaying) {
+    isPersonPlaying = false;
+    isAIPlaying = false;
+    endEvalButton.html('Next Generation');
+    startEvaluation();
+  } else {
+    neat.sort();
+    var newGames = [];
 
-  for (var i = 0; i < neat.elitism; i++) {
-    newGames.push(neat.population[i]);
+    for (var i = 0; i < neat.elitism; i++) {
+      newGames.push(neat.population[i]);
+    }
+
+    for (var i = 0; i < neat.popsize - neat.elitism; i++) {
+      newGames.push(neat.getOffspring());
+    }
+
+    neat.population = newGames;
+    neat.mutate();
+
+    neat.generation++;
+    startEvaluation();
   }
-
-  for (var i = 0; i < neat.popsize - neat.elitism; i++) {
-    newGames.push(neat.getOffspring());
-  }
-
-  neat.population = newGames;
-  neat.mutate();
-
-  neat.generation++;
-  startEvaluation();
 }
 
 function saveCurrentPopulation() {
+  neat.sort();
   var fileName = `trained_population-${Math.floor(new Date() / 1000)}.js`;
-  var blob = new Blob([`var trainedPop = JSON.parse('${JSON.stringify(neat.population)}');`], { type: 'text/json' }),
+  var blob = new Blob([`var trainedPop = JSON.parse('${JSON.stringify({ gen: neat.generation, data: neat.population })}');`], { type: 'text/json' }),
     e = document.createEvent('MouseEvents'),
     a = document.createElement('a');
   a.download = fileName;

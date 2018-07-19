@@ -9,7 +9,7 @@ var isPersonPlaying = false,
 var ballSpeed = 6;
 var randomBounceRate = 0.2;
 
-var populationSize = 1000;
+var populationSize = 500;
 
 var remainingAlive = populationSize;
 
@@ -17,6 +17,12 @@ var ballSpeedP, ballSpeedSlider;
 var populationSizeP, populationSizeSlider;
 
 var previousPopulation;
+
+var endEvalButton;
+
+var baseFrame = 0;
+
+var END_FRAME_COUNT = 1000;
 
 var configChanged = function() {
   ballSpeed = ballSpeedSlider.value();
@@ -30,31 +36,22 @@ var configChanged = function() {
 }
 
 function beginHumanPlay() {
+  endEvalButton.html('Begin AI Training (Stop AI/Player Game)');
   isAIPlaying = false;
   isPersonPlaying = true;
   if (!USE_TRAINED_POP) {
-    // load my trained population (defined in trainedpop.js)
-    var newPop = [];
-    for (var i = 0; i < populationSize; i++) {
-      var json = trainedPop[i % trainedPop.length];
-      newPop[i] = neataptic.Network.fromJSON(json);
-    }
-    neat.population = newPop;
+    getPopulationFromFile();
   }
   neat.sort();
   games = [new Game(neat.population[0])];
 }
 
 function beginAIPlay() {
+  endEvalButton.html('Begin AI Training (Stop AI/Player Game)');
   isPersonPlaying = false;
   isAIPlaying = true;
   // load my trained population (defined in trainedpop.js)
-  var newPop = [];
-  for (var i = 0; i < populationSize; i++) {
-    var json = trainedPop[i % trainedPop.length];
-    newPop[i] = neataptic.Network.fromJSON(json);
-  }
-  neat.population = newPop;
+  getPopulationFromFile();
   neat.sort();
   games = [new Game(neat.population[0])];
 }
@@ -80,17 +77,12 @@ function setup() {
   populationSizeSlider = createSlider(2, 10000, populationSize);
   populationSizeSlider.changed(configChanged);
 
-  button = createButton('Next Generation');
-  button.mousePressed(endEvaluation);
+  endEvalButton = createButton('Next Generation');
+  endEvalButton.mousePressed(endEvaluation);
 
-  button = createButton('Save Current Population');
-  button.mousePressed(saveCurrentPopulation);
-
-  button = createButton('Watch AI vs. AI');
-  button.mousePressed(beginAIPlay);
-
-  button = createButton('Play Trained AI');
-  button.mousePressed(beginHumanPlay);
+  createButton('Save Current Population').mousePressed(saveCurrentPopulation);
+  createButton('Watch AI vs. AI').mousePressed(beginAIPlay);
+  createButton('Play Trained AI').mousePressed(beginHumanPlay);
 
   startEvaluation();
 }
@@ -117,7 +109,7 @@ function draw() {
 
   infoP.html(infoPHTML());
 
-  if (!isPersonPlaying && !isAIPlaying && (allHaveFinished || curHighestScore >= 300)) {
+  if (!isPersonPlaying && !isAIPlaying && (allHaveFinished || (frameCount - baseFrame) >= END_FRAME_COUNT)) {
     endEvaluation();
     return;
   }

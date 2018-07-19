@@ -31,10 +31,8 @@ function Ball(game) {
       } else {
         // this.reset();
         this.game.done = true;
-        // take away points the longer it travels -- we want it to be very efficient
-        // divide by 1000 because in the extreme condition that the paddle travels 500 pixels (the height of the screen),
-        // then reduce the score by half a point to discourage from doing that
-        this.game.brain.score -= this.game.paddleDistanceTraveled / 1000.0;
+        // divide brain score if died because it's bad
+        this.game.brain.score /= 10.0;
       }
     }
   }
@@ -67,8 +65,11 @@ function Ball(game) {
     let withinPaddleY = this.y + this.size / 2 > paddle.y - paddle.height / 2 && this.y - this.size / 2 < paddle.y + paddle.height / 2;
     if (withinPaddleX && withinPaddleY) {
       // increase score when paddle hits ball
+      // increase score by a fraction of how long it was stopped before it hit
       // add to brain score so neural network algorithm can later decide how good this game was
-      this.game.brain.score += 1;
+      this.game.brain.score += 1 + paddle.stoppedFor / 200.0;
+      paddle.stoppedFor = 0;
+      (this.side == 1 ? this.game.rightPaddle : this.game.leftPaddle).stoppedFor = 0;
 
       // // switch x direction and increase ball y velocity by a factor of the paddle's y velocity
       // this.vx *= -1;
