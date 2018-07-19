@@ -7,7 +7,7 @@ var neat, network;
 var MUTATION_RATE = 0.3;
 var ELITISM_RATE = 0.1;
 
-var USE_TRAINED_POP = true; // use already trained population
+var USE_TRAINED_POP = false; // use already trained population
 
 // inputs: vertical displacement of ball from center of paddle, horizontal displacement of ball from center of paddle, ball horizontal velocity, ball vertical velocity, paddle velocity, other paddle vertical displacement (6)
 // outputs: vertical paddle velocity (1)
