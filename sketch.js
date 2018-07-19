@@ -9,12 +9,16 @@ var isPersonPlaying = false,
 var ballSpeed = 6;
 var randomBounceRate = 0.2;
 
-var populationSize = 500;
+// divide by 2 everywhere because that is the game count
+// populationSize must always be even, so let user set game count and then double it
+var populationSize = 700;
 
-var remainingAlive = populationSize;
+function gameCount() {
+  return populationSize / 2;
+}
 
 var ballSpeedP, ballSpeedSlider;
-var populationSizeP, populationSizeSlider;
+var gameCountP, gameCountSlider;
 
 var previousPopulation;
 
@@ -22,16 +26,16 @@ var endEvalButton;
 
 var baseFrame = 0;
 
-var END_FRAME_COUNT = 1000;
+var END_FRAME_COUNT = 600;
 
 var loadingFile = false;
 
 function configChanged() {
   ballSpeed = ballSpeedSlider.value();
   ballSpeedP.html('Ball Speed: ' + ballSpeed);
-  if (populationSize != populationSizeSlider.value()) {
-    populationSize = populationSizeSlider.value();
-    populationSizeP.html('Population Size: ' + populationSize);
+  if (gameCount() != gameCountSlider.value()) {
+    populationSize = gameCountSlider.value() * 2;
+    gameCountP.html('Game Count: ' + gameCount());
     initNeat(true);
     endEvaluation();
   }
@@ -54,7 +58,7 @@ function loadUserAI(event) {
 }
 
 function infoPHTML() {
-  return `Generation: ${neat.generation}<br>Highest Score: ${highestScore}<br>Current Highest Score: ${curHighestScore}<br>Remaining Alive: ${remainingAlive}`;
+  return `Generation: ${neat.generation}<br>Highest Score: ${highestScore}<br>Current Highest Score: ${curHighestScore}<br>Remaining Frames: ${END_FRAME_COUNT - (frameCount - baseFrame)}`;
 }
 
 function setup() {
@@ -73,9 +77,9 @@ function setup() {
   ballSpeedSlider = createSlider(1, 20, ballSpeed);
   ballSpeedSlider.changed(configChanged);
 
-  populationSizeP = createP('Population Size: ' + populationSize);
-  populationSizeSlider = createSlider(2, 10000, populationSize);
-  populationSizeSlider.changed(configChanged);
+  gameCountP = createP('Game Count: ' + gameCount());
+  gameCountSlider = createSlider(2, 10000, gameCount());
+  gameCountSlider.changed(configChanged);
 
   createButton('Load Premade Trained AI (Will Delete Current AI)').mousePressed(() => {
     isPersonPlaying = false;
@@ -92,7 +96,7 @@ function setup() {
     getPopulationFromFile();
     infoP.html(infoPHTML());
     neat.sort();
-    games = [new Game(neat.population[0])];
+    games = [new Game(neat.population[0], neat.population[1])];
   });
 
   createButton('Watch AI vs. AI').mousePressed(() => {
@@ -100,7 +104,7 @@ function setup() {
     isPersonPlaying = false;
     isAIPlaying = true;
     neat.sort();
-    games = [new Game(neat.population[0])];
+    games = [new Game(neat.population[0], neat.population[1])];
   });
 
   createButton('Save This AI').mousePressed(saveCurrentPopulation);
@@ -110,7 +114,7 @@ function setup() {
     isAIPlaying = false;
     isPersonPlaying = true;
     neat.sort();
-    games = [new Game(neat.population[0])];
+    games = [new Game(neat.population[0], neat.population[1])];
   });
 
   // createP('Load Your Own Trained AI:');
@@ -134,25 +138,23 @@ function draw() {
   }
 
   curHighestScore = 0;
-  remainingAlive = 0;
-  var allHaveFinished = true;
   for (var i = 0; i < games.length; i++) {
-    var score = Math.round(games[i].brain.score);
-    if (score > curHighestScore) {
-      curHighestScore = score;
+    var leftScore = Math.round(games[i].leftBrain.score);
+    var rightScore = Math.round(games[i].rightBrain.score);
+    if (leftScore > curHighestScore) {
+      curHighestScore = leftScore;
+    }
+    if (rightScore > curHighestScore) {
+      curHighestScore = rightScore;
     }
     if (curHighestScore > highestScore) {
       highestScore = curHighestScore;
-    }
-    if (!games[i].done) {
-      remainingAlive++;
-      allHaveFinished = false;
     }
   }
 
   infoP.html(infoPHTML());
 
-  if (!isPersonPlaying && !isAIPlaying && (allHaveFinished || (frameCount - baseFrame) >= END_FRAME_COUNT)) {
+  if (!isPersonPlaying && !isAIPlaying && (frameCount - baseFrame) >= END_FRAME_COUNT) {
     endEvaluation();
     return;
   }

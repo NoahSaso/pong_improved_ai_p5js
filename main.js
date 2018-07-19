@@ -60,6 +60,7 @@ function getPopulationFromFile(newPopArray) {
   // Convert the json to an array of networks
   var popArray = newPopArray || trainedPop;
   var newPop = [];
+  // using this looping method with the modulo operator ensures the even population size even if the file has an odd population size
   for (var i = 0; i < populationSize; i++) {
     var json = popArray.data[i % popArray.data.length]; // use modulo to loop back to beginning of array in case population size is too big
     newPop[i] = neataptic.Network.fromJSON(json);
@@ -70,11 +71,11 @@ function getPopulationFromFile(newPopArray) {
 
 function startEvaluation() {
   games = [];
-  for (var genome in neat.population) {
-    genome = neat.population[genome];
-    games.push(new Game(genome));
+  for (var i = 0; i < neat.population.length; i += 2) {
+    let leftGenome = neat.population[i];
+    let rightGenome = neat.population[i + 1];
+    games.push(new Game(leftGenome, rightGenome));
   }
-  remainingAlive = games.length;
   baseFrame = frameCount;
 }
 
@@ -86,17 +87,17 @@ function endEvaluation() {
     startEvaluation();
   } else {
     neat.sort();
-    var newGames = [];
+    var newBrains = [];
 
     for (var i = 0; i < neat.elitism; i++) {
-      newGames.push(neat.population[i]);
+      newBrains.push(neat.population[i]);
     }
 
     for (var i = 0; i < neat.popsize - neat.elitism; i++) {
-      newGames.push(neat.getOffspring());
+      newBrains.push(neat.getOffspring());
     }
 
-    neat.population = newGames;
+    neat.population = newBrains;
     neat.mutate();
 
     neat.generation++;

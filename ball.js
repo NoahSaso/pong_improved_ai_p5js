@@ -24,14 +24,22 @@ function Ball(game) {
       this.vy *= -1;
     }
     // if ball left barrier 10 pixels to the left of left paddle left barrier or ball right barrier 10 pixels to the right of right paddle right barrier
-    if (this.x - this.size / 2 <= this.game.leftPaddle.x - this.game.leftPaddle.width / 2 - 10 || this.x + this.size / 2 >= this.game.rightPaddle.x + this.game.rightPaddle.width / 2 + 10) {
+    var diedOnLeft = this.x - this.size / 2 <= this.game.leftPaddle.x - this.game.leftPaddle.width / 2 - 10;
+    var diedOnRight = this.x + this.size / 2 >= this.game.rightPaddle.x + this.game.rightPaddle.width / 2 + 10;
+    if (diedOnLeft || diedOnRight) {
       if (isPersonPlaying || isAIPlaying) {
-        this.game.brain.score = 0;
+        this.game.leftBrain.score = 0;
+        this.game.rightBrain.score = 0;
         this.reset();
       } else {
-        this.game.done = true;
-        // divide brain score if died because it's bad
-        this.game.brain.score /= 10.0;
+        // this.game.done = true;
+        // increase other paddle's brain score if won because it's good
+        if (diedOnLeft) {
+          this.game.rightBrain.score += 50.0;
+        } else if (diedOnRight) {
+          this.game.leftBrain.score += 50.0;
+        }
+        this.reset();
       }
     }
   }
@@ -63,9 +71,8 @@ function Ball(game) {
     // check ball bottom barrier greater than paddle top barrier and ball top barrier less than paddle bottom barrier
     let withinPaddleY = this.y + this.size / 2 > paddle.y - paddle.height / 2 && this.y - this.size / 2 < paddle.y + paddle.height / 2;
     if (withinPaddleX && withinPaddleY) {
-      // increase score when paddle hits ball
-      // add to brain score so neural network algorithm can later decide how good this game was
-      this.game.brain.score += 1;
+      // decrease score of other paddle when paddle hits ball
+      (paddle.side == 1 ? this.game.rightBrain : this.game.leftBrain).score--;
 
       // // switch x direction and increase ball y velocity by a factor of the paddle's y velocity
       // this.vx *= -1;

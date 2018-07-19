@@ -13,11 +13,14 @@ function Paddle(x, side, game) {
       var newY = constrain(mouseY, this.height / 2, height - this.height / 2);
     } else {
       var input = this.detect();
-      var output = this.game.brain.activate(input);
+      var output = (this.side == 1 ? this.game.leftBrain : this.game.rightBrain).activate(input);
 
       this.vy = output[0];
 
       var newY = constrain(this.y + this.vy, this.height / 2, height - this.height / 2);
+
+      var diff = Math.abs(newY - this.y);
+      (this.side == 1 ? this.game.leftBrain : this.game.rightBrain).score -= diff / 200.0;
     }
 
     this.y = newY;
