@@ -1,7 +1,8 @@
 var games = [];
 
-var highestScore = 0;
-var curHighestScore = 0;
+var highestScore;
+var curHighestScore;
+var curHighestGame;
 
 var isPersonPlaying = false,
   isAIPlaying = false;
@@ -26,11 +27,13 @@ var loadingFile = false;
 
 var alreadyTrainedBrain;
 
-function updateHighestScore(newScore) {
-  if (newScore > curHighestScore) {
+function updateHighestScore(game) {
+  let newScore = game.leftBrain.score;
+  if (newScore > curHighestScore || (!curHighestScore && curHighestScore != 0)) {
     curHighestScore = newScore;
+    curHighestGame = game;
   }
-  if (curHighestScore > highestScore) {
+  if (curHighestScore > highestScore || (!highestScore && highestScore != 0)) {
     highestScore = curHighestScore;
   }
 }
@@ -156,9 +159,12 @@ function draw() {
       games[i].update();
     }
     // only show first 100 to save processing power
-    if (i < 100) {
-      games[i].show();
-    }
+    // if (i < 100) {
+    //   games[i].show();
+    // }
+  }
+  if (curHighestGame) {
+    curHighestGame.show();
   }
 }
 

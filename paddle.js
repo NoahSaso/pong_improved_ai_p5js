@@ -36,7 +36,7 @@ function Paddle(x, side, game) {
 
       // reduce points for moving a lot but add points for making other paddle move a lot
       this.game.leftBrain.score += (this.side == 1 ? -1 : 1) * diff / 1000.0;
-      updateHighestScore(this.game.leftBrain.score);
+      updateHighestScore(this.game);
     }
 
     this.y = newY;

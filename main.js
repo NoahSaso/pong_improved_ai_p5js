@@ -68,7 +68,7 @@ function getPopulationFromFile(newPopArray) {
 
 function startEvaluation() {
   games = [];
-  for (var i = 0; i < neat.population.length; i += 1) {
+  for (var i = 0; i < neat.population.length; i++) {
     let leftGenome = neat.population[i];
     games.push(new Game(leftGenome));
   }

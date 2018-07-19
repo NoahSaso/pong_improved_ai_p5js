@@ -38,7 +38,7 @@ function Ball(game) {
         } else if (diedOnRight && this.game.leftPaddle.hasHit && this.game.rightPaddle.hasHit && this.game.leftPaddle.distanceTraveled > 0) {
           this.game.leftBrain.score += 20.0;
         }
-        updateHighestScore(this.game.leftBrain.score);
+        updateHighestScore(this.game);
         this.reset();
       }
     }
@@ -75,12 +75,12 @@ function Ball(game) {
       // decrease score of other paddle when paddle hits ball
       if (paddle.side == 2) {
         this.game.leftBrain.score--;
-        updateHighestScore(this.game.leftBrain.score);
+        updateHighestScore(this.game);
         // reset stopped for to 0 so it starts after the right paddle hits it
         this.game.leftPaddle.stoppedFor = 0;
       } else {
         // incentivize to predict where the ball is going to be by adding points for how long it is stopped before it hits the ball
-        this.game.leftBrain.score += this.game.leftPaddle.stoppedFor / 1000.0;
+        this.game.leftBrain.score += 1 + this.game.leftPaddle.stoppedFor / 1000.0;
       }
       // (paddle.side == 1 ? this.game.rightBrain : this.game.leftBrain).score--;
 
