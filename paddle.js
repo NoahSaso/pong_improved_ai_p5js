@@ -12,6 +12,8 @@ function Paddle(x, side, game) {
 
   this.distanceTraveled = 0;
 
+  this.stoppedFor = 0;
+
   this.update = function () {
     if (isPersonPlaying && this.side == 2) {
       var newY = constrain(mouseY, this.height / 2, height - this.height / 2);
@@ -26,6 +28,12 @@ function Paddle(x, side, game) {
       var diff = Math.abs(newY - this.y);
       this.distanceTraveled += diff;
 
+      if (diff < 1) {
+        this.stoppedFor += 1;
+      } else {
+        this.stoppedFor = 0;
+      }
+
       // reduce points for moving a lot but add points for making other paddle move a lot
       this.game.leftBrain.score += (this.side == 1 ? -1 : 1) * diff / 500.0;
       updateHighestScore(this.game.leftBrain.score);
@@ -39,16 +47,19 @@ function Paddle(x, side, game) {
     rect(this.x, this.y, this.width, this.height);
   }
 
-  // inputs: vertical displacement of ball from center of paddle, horizontal displacement of ball from center of paddle, ball horizontal velocity, ball vertical velocity, paddle velocity (5)
-
   this.detect = function () {
     // multiply some by negative if left so that the ai does not depend on the side to learn (e.g. a ball in between the paddles is a positive number to the ai all the time)
     var inputs = [
-      this.game.ball.y - this.y, // vertical displacement of ball from center of paddle
+      this.game.ball.y, // distance of ball from top of screen
+      height - this.game.ball.y, // distance of ball from bottom of screen
+      this.y, // distance of paddle from top of screen
+      height - this.y, // distance of paddle from bottom of screen
       (this.side == 1 ? -1 : 1) * (this.x - this.game.ball.x), // horizontal displacement of ball from center of paddle
       (this.side == 1 ? -1 : 1) * this.game.ball.vx, // ball horizontal velocity
       (this.side == 1 ? -1 : 1) * this.game.ball.vy, // ball vertical velocity
-      this.vy // paddle velocity
+      this.vy, // paddle velocity
+      (this.side == 1 ? this.game.rightPaddle : this.game.leftPaddle).y, // other paddle distance from top of screen
+      height - (this.side == 1 ? this.game.rightPaddle : this.game.leftPaddle).y // other paddle distance from bottom of screen
     ];
     return inputs;
   }

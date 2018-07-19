@@ -109,7 +109,7 @@ function setup() {
     isPersonPlaying = false;
     isAIPlaying = true;
     neat.sort();
-    games = [new Game(neat.population[0])];
+    games = [new Game(neat.population[0], neat.population[1])];
   });
 
   createButton('Save This AI').mousePressed(saveCurrentPopulation);

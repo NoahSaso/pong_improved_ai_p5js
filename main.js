@@ -9,17 +9,14 @@ var ELITISM_RATE = 0.1;
 
 var USE_TRAINED_POP = false; // use already trained population
 
-// inputs: vertical displacement of ball from center of paddle, horizontal displacement of ball from center of paddle, ball horizontal velocity, ball vertical velocity, paddle velocity (5)
-// outputs: vertical paddle velocity (1)
-
 function initNeat(isResetting) {
   if (isResetting) {
     var oldPop = neat.population;
   }
-  // hidden layer nodes rule of thumb: inputs + outputs = 5 + 1 = 6
-  network = new Architect.Perceptron(5, 6, 1);
+  // hidden layer nodes rule of thumb: inputs + outputs = 10 + 1 = 11
+  network = new Architect.Perceptron(10, 11, 1);
   neat = new Neat(
-    5,
+    10,
     1,
     null,
     {
