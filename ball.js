@@ -67,7 +67,7 @@ function Ball(game) {
       // increase score when paddle hits ball
       // increase score by a fraction of how long it was stopped before it hit
       // add to brain score so neural network algorithm can later decide how good this game was
-      this.game.brain.score += 1 + paddle.stoppedFor / 200.0;
+      this.game.brain.score += 1 + paddle.stoppedFor / 500.0;
       paddle.stoppedFor = 0;
       (this.side == 1 ? this.game.rightPaddle : this.game.leftPaddle).stoppedFor = 0;
 

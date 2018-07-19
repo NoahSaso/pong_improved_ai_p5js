@@ -32,9 +32,8 @@ function Paddle(x, side, game) {
       }
 
       // take away points the longer it travels -- we want it to be very efficient
-      // divide by 1000 because in the extreme condition that the paddle travels 500 pixels (the height of the screen),
-      // then reduce the score by half a point to discourage from doing that
-      this.game.brain.score -= diff / 1000.0;
+      // divide to reduce the effect of 1 pixel (traveling 500 pixels, which is the height of the screen, reduces 1/4 point)
+      this.game.brain.score -= diff / 2000.0;
     }
 
     this.y = newY;
