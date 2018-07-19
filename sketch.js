@@ -158,13 +158,7 @@ function draw() {
     for (var j = 0; j < ballSpeed; j++) {
       games[i].update();
     }
-    // only show first 100 to save processing power
-    // if (i < 100) {
-    //   games[i].show();
-    // }
-  }
-  if (curHighestGame) {
-    curHighestGame.show();
+    games[i].show();
   }
 }
 
