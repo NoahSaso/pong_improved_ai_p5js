@@ -34,10 +34,10 @@ function Ball(game) {
       } else {
         // this.game.done = true;
         // increase other paddle's brain score if won because it's good
-        if (diedOnLeft) {
-          this.game.rightBrain.score += 50.0;
-        } else if (diedOnRight) {
-          this.game.leftBrain.score += 50.0;
+        if (diedOnLeft && this.game.rightPaddle.hasHit) {
+          this.game.rightBrain.score += 100.0;
+        } else if (diedOnRight && this.game.leftPaddle.hasHit) {
+          this.game.leftBrain.score += 100.0;
         }
         this.reset();
       }
@@ -71,6 +71,7 @@ function Ball(game) {
     // check ball bottom barrier greater than paddle top barrier and ball top barrier less than paddle bottom barrier
     let withinPaddleY = this.y + this.size / 2 > paddle.y - paddle.height / 2 && this.y - this.size / 2 < paddle.y + paddle.height / 2;
     if (withinPaddleX && withinPaddleY) {
+      (paddle.side == 1 ? this.game.leftBrain : this.game.rightBrain).hasHit = true;
       // decrease score of other paddle when paddle hits ball
       (paddle.side == 1 ? this.game.rightBrain : this.game.leftBrain).score--;
 

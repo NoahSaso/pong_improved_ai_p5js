@@ -8,6 +8,8 @@ function Paddle(x, side, game) {
 
   this.game = game;
 
+  this.hasHit = false;
+
   this.update = function () {
     if (isPersonPlaying && this.side == 2) {
       var newY = constrain(mouseY, this.height / 2, height - this.height / 2);
