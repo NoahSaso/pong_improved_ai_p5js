@@ -29,7 +29,6 @@ function Ball(game) {
         this.game.brain.score = 0;
         this.reset();
       } else {
-        // this.reset();
         this.game.done = true;
         // divide brain score if died because it's bad
         this.game.brain.score /= 10.0;
@@ -65,11 +64,8 @@ function Ball(game) {
     let withinPaddleY = this.y + this.size / 2 > paddle.y - paddle.height / 2 && this.y - this.size / 2 < paddle.y + paddle.height / 2;
     if (withinPaddleX && withinPaddleY) {
       // increase score when paddle hits ball
-      // increase score by a fraction of how long it was stopped before it hit
       // add to brain score so neural network algorithm can later decide how good this game was
-      this.game.brain.score += 1 + paddle.stoppedFor / 500.0;
-      paddle.stoppedFor = 0;
-      (this.side == 1 ? this.game.rightPaddle : this.game.leftPaddle).stoppedFor = 0;
+      this.game.brain.score += 1;
 
       // // switch x direction and increase ball y velocity by a factor of the paddle's y velocity
       // this.vx *= -1;

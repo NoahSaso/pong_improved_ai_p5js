@@ -9,17 +9,17 @@ var ELITISM_RATE = 0.1;
 
 var USE_TRAINED_POP = false; // use already trained population
 
-// inputs: vertical displacement of ball from center of paddle, horizontal displacement of ball from center of paddle, ball horizontal velocity, ball vertical velocity, paddle velocity, other paddle vertical displacement (6)
+// inputs: vertical displacement of ball from center of paddle, horizontal displacement of ball from center of paddle, ball horizontal velocity, ball vertical velocity, paddle velocity (5)
 // outputs: vertical paddle velocity (1)
 
 function initNeat(isResetting) {
   if (isResetting) {
     var oldPop = neat.population;
   }
-  // hidden layer nodes rule of thumb: inputs + outputs = 6 + 1 = 7
-  network = new Architect.Perceptron(6, 7, 1);
+  // hidden layer nodes rule of thumb: inputs + outputs = 5 + 1 = 6
+  network = new Architect.Perceptron(5, 6, 1);
   neat = new Neat(
-    6,
+    5,
     1,
     null,
     {
@@ -44,6 +44,7 @@ function initNeat(isResetting) {
       network: network
     }
   );
+  neat.generation = 1;
   if (isResetting) {
     // copy previous population into new population
     var smallerSize = populationSize < oldPop.length ? populationSize : oldPop.length;
@@ -55,15 +56,16 @@ function initNeat(isResetting) {
   }
 }
 
-function getPopulationFromFile() {
+function getPopulationFromFile(newPopArray) {
   // Convert the json to an array of networks
+  var popArray = newPopArray || trainedPop;
   var newPop = [];
   for (var i = 0; i < populationSize; i++) {
-    var json = trainedPop.data[i % trainedPop.data.length]; // use modulo to loop back to beginning of array in case population size is too big
+    var json = popArray.data[i % popArray.data.length]; // use modulo to loop back to beginning of array in case population size is too big
     newPop[i] = neataptic.Network.fromJSON(json);
   }
   neat.population = newPop;
-  neat.generation = trainedPop.gen;
+  neat.generation = popArray.gen;
 }
 
 function startEvaluation() {

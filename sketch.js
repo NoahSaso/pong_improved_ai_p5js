@@ -24,7 +24,9 @@ var baseFrame = 0;
 
 var END_FRAME_COUNT = 1000;
 
-var configChanged = function() {
+var loadingFile = false;
+
+function configChanged() {
   ballSpeed = ballSpeedSlider.value();
   ballSpeedP.html('Ball Speed: ' + ballSpeed);
   if (populationSize != populationSizeSlider.value()) {
@@ -35,25 +37,20 @@ var configChanged = function() {
   }
 }
 
-function beginHumanPlay() {
-  endEvalButton.html('Begin AI Training (Stop AI/Player Game)');
-  isAIPlaying = false;
-  isPersonPlaying = true;
-  if (!USE_TRAINED_POP) {
-    getPopulationFromFile();
+function loadUserAI(event) {
+  let file = event.target.files[0];
+  var reader = new FileReader();
+  reader.onload = (e) => {
+    eval(e.target.result.replace('trainedPop', 'loadedTrainedPop'));
+    isPersonPlaying = false;
+    isAIPlaying = false;
+    getPopulationFromFile(loadedTrainedPop);
+    infoP.html(infoPHTML());
+    startEvaluation();
+    loadingFile = false;
   }
-  neat.sort();
-  games = [new Game(neat.population[0])];
-}
-
-function beginAIPlay() {
-  endEvalButton.html('Begin AI Training (Stop AI/Player Game)');
-  isPersonPlaying = false;
-  isAIPlaying = true;
-  // load my trained population (defined in trainedpop.js)
-  getPopulationFromFile();
-  neat.sort();
-  games = [new Game(neat.population[0])];
+  loadingFile = true;
+  reader.readAsText(file);
 }
 
 function infoPHTML() {
@@ -69,6 +66,9 @@ function setup() {
   infoP = createP(infoPHTML());
 
   // config
+  endEvalButton = createButton('Next Generation');
+  endEvalButton.mousePressed(endEvaluation);
+
   ballSpeedP = createP('Ball Speed: ' + ballSpeed);
   ballSpeedSlider = createSlider(1, 20, ballSpeed);
   ballSpeedSlider.changed(configChanged);
@@ -77,18 +77,61 @@ function setup() {
   populationSizeSlider = createSlider(2, 10000, populationSize);
   populationSizeSlider.changed(configChanged);
 
-  endEvalButton = createButton('Next Generation');
-  endEvalButton.mousePressed(endEvaluation);
+  createButton('Load Premade Trained AI (Will Delete Current AI)').mousePressed(() => {
+    isPersonPlaying = false;
+    isAIPlaying = false;
+    getPopulationFromFile();
+    infoP.html(infoPHTML());
+    startEvaluation();
+  });
 
-  createButton('Save Current Population').mousePressed(saveCurrentPopulation);
-  createButton('Watch AI vs. AI').mousePressed(beginAIPlay);
-  createButton('Play Trained AI').mousePressed(beginHumanPlay);
+  createButton('Play Premade Trained AI (Will Delete Current AI)').mousePressed(() => {
+    endEvalButton.html('Reset AI Training (Stop AI/Player Game)');
+    isAIPlaying = false;
+    isPersonPlaying = true;
+    getPopulationFromFile();
+    infoP.html(infoPHTML());
+    neat.sort();
+    games = [new Game(neat.population[0])];
+  });
+
+  createButton('Watch AI vs. AI').mousePressed(() => {
+    endEvalButton.html('Resume AI Training (Stop AI/Player Game)');
+    isPersonPlaying = false;
+    isAIPlaying = true;
+    neat.sort();
+    games = [new Game(neat.population[0])];
+  });
+
+  createButton('Save This AI').mousePressed(saveCurrentPopulation);
+
+  createButton('Play This AI').mousePressed(() => {
+    endEvalButton.html('Resume AI Training (Stop AI/Player Game)');
+    isAIPlaying = false;
+    isPersonPlaying = true;
+    neat.sort();
+    games = [new Game(neat.population[0])];
+  });
+
+  // createP('Load Your Own Trained AI:');
+  // createFileInput((file) => {
+  //   // let fr = new FileReader();
+  //   // fr.onload = (event) => {
+  //   //   console.log(event.target.results);
+  //   // };
+  //   console.log(file);
+  //   // fr.readAsText(file.data);
+  // });
 
   startEvaluation();
 }
 
 function draw() {
   background(51);
+
+  if (loadingFile) {
+    return;
+  }
 
   curHighestScore = 0;
   remainingAlive = 0;
