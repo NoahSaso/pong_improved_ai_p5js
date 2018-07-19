@@ -9,16 +9,10 @@ var isPersonPlaying = false,
 var ballSpeed = 6;
 var randomBounceRate = 0.2;
 
-// divide by 2 everywhere because that is the game count
-// populationSize must always be even, so let user set game count and then double it
-var populationSize = 700;
-
-function gameCount() {
-  return populationSize / 2;
-}
+var populationSize = 750;
 
 var ballSpeedP, ballSpeedSlider;
-var gameCountP, gameCountSlider;
+var populationSizeP, populationSizeSlider;
 
 var previousPopulation;
 
@@ -26,16 +20,27 @@ var endEvalButton;
 
 var baseFrame = 0;
 
-var END_FRAME_COUNT = 750;
+var END_FRAME_COUNT = 500;
 
 var loadingFile = false;
+
+var alreadyTrainedBrain;
+
+function updateHighestScore(newScore) {
+  if (newScore > curHighestScore) {
+    curHighestScore = newScore;
+  }
+  if (curHighestScore > highestScore) {
+    highestScore = curHighestScore;
+  }
+}
 
 function configChanged() {
   ballSpeed = ballSpeedSlider.value();
   ballSpeedP.html('Ball Speed: ' + ballSpeed);
-  if (gameCount() != gameCountSlider.value()) {
-    populationSize = gameCountSlider.value() * 2;
-    gameCountP.html('Game Count: ' + gameCount());
+  if (populationSize != populationSizeSlider.value()) {
+    populationSize = populationSizeSlider.value();
+    populationSizeP.html('Population Size: ' + populationSize);
     initNeat(true);
     endEvaluation();
   }
@@ -77,9 +82,9 @@ function setup() {
   ballSpeedSlider = createSlider(1, 20, ballSpeed);
   ballSpeedSlider.changed(configChanged);
 
-  gameCountP = createP('Game Count: ' + gameCount());
-  gameCountSlider = createSlider(2, 10000, gameCount());
-  gameCountSlider.changed(configChanged);
+  populationSizeP = createP('Population Size: ' + populationSize);
+  populationSizeSlider = createSlider(2, 10000, populationSize);
+  populationSizeSlider.changed(configChanged);
 
   createButton('Load Premade Trained AI (Will Delete Current AI)').mousePressed(() => {
     isPersonPlaying = false;
@@ -96,7 +101,7 @@ function setup() {
     getPopulationFromFile();
     infoP.html(infoPHTML());
     neat.sort();
-    games = [new Game(neat.population[0], neat.population[1])];
+    games = [new Game(neat.population[0])];
   });
 
   createButton('Watch AI vs. AI').mousePressed(() => {
@@ -104,7 +109,7 @@ function setup() {
     isPersonPlaying = false;
     isAIPlaying = true;
     neat.sort();
-    games = [new Game(neat.population[0], neat.population[1])];
+    games = [new Game(neat.population[0])];
   });
 
   createButton('Save This AI').mousePressed(saveCurrentPopulation);
@@ -114,7 +119,7 @@ function setup() {
     isAIPlaying = false;
     isPersonPlaying = true;
     neat.sort();
-    games = [new Game(neat.population[0], neat.population[1])];
+    games = [new Game(neat.population[0])];
   });
 
   // createP('Load Your Own Trained AI:');
@@ -127,6 +132,8 @@ function setup() {
   //   // fr.readAsText(file.data);
   // });
 
+  alreadyTrainedBrain = neataptic.Network.fromJSON(trainedPongAIPop.data[0]);
+
   startEvaluation();
 }
 
@@ -135,21 +142,6 @@ function draw() {
 
   if (loadingFile) {
     return;
-  }
-
-  curHighestScore = 0;
-  for (var i = 0; i < games.length; i++) {
-    var leftScore = Math.round(games[i].leftBrain.score);
-    var rightScore = Math.round(games[i].rightBrain.score);
-    if (leftScore > curHighestScore) {
-      curHighestScore = leftScore;
-    }
-    if (rightScore > curHighestScore) {
-      curHighestScore = rightScore;
-    }
-    if (curHighestScore > highestScore) {
-      highestScore = curHighestScore;
-    }
   }
 
   infoP.html(infoPHTML());

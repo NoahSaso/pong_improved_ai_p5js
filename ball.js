@@ -29,16 +29,16 @@ function Ball(game) {
     if (diedOnLeft || diedOnRight) {
       if (isPersonPlaying || isAIPlaying) {
         this.game.leftBrain.score = 0;
-        this.game.rightBrain.score = 0;
         this.reset();
       } else {
         // this.game.done = true;
         // increase other paddle's brain score if won because it's good
-        if (diedOnLeft && this.game.rightPaddle.hasHit) {
-          this.game.rightBrain.score += 100.0;
-        } else if (diedOnRight && this.game.leftPaddle.hasHit) {
+        if (diedOnLeft) {
+          this.game.leftBrain.score -= 100.0;
+        } else if (diedOnRight && this.game.leftPaddle.hasHit && this.game.leftPaddle.distanceTraveled > 0) {
           this.game.leftBrain.score += 100.0;
         }
+        updateHighestScore(this.game.leftBrain.score);
         this.reset();
       }
     }
@@ -47,7 +47,7 @@ function Ball(game) {
   this.reset = function() {
     this.x = width / 2;
     this.y = height / 2;
-    this.vx = random([-2, 2]);
+    this.vx = random([-BASE_BALL_SPEED, BASE_BALL_SPEED]);
     this.vy = random(-0.5, 0.5);
     this.game.leftPaddle.y = height / 2;
     this.game.leftPaddle.vy = 0;
@@ -71,9 +71,13 @@ function Ball(game) {
     // check ball bottom barrier greater than paddle top barrier and ball top barrier less than paddle bottom barrier
     let withinPaddleY = this.y + this.size / 2 > paddle.y - paddle.height / 2 && this.y - this.size / 2 < paddle.y + paddle.height / 2;
     if (withinPaddleX && withinPaddleY) {
-      (paddle.side == 1 ? this.game.leftBrain : this.game.rightBrain).hasHit = true;
+      (paddle.side == 1 ? this.game.leftPaddle : this.game.rightPaddle).hasHit = true;
       // decrease score of other paddle when paddle hits ball
-      (paddle.side == 1 ? this.game.rightBrain : this.game.leftBrain).score--;
+      if (paddle.side == 2) {
+        this.game.leftBrain.score--;
+        updateHighestScore(this.game.leftBrain.score);
+      }
+      // (paddle.side == 1 ? this.game.rightBrain : this.game.leftBrain).score--;
 
       // // switch x direction and increase ball y velocity by a factor of the paddle's y velocity
       // this.vx *= -1;

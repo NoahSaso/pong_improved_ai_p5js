@@ -10,19 +10,25 @@ function Paddle(x, side, game) {
 
   this.hasHit = false;
 
+  this.distanceTraveled = 0;
+
   this.update = function () {
     if (isPersonPlaying && this.side == 2) {
       var newY = constrain(mouseY, this.height / 2, height - this.height / 2);
     } else {
       var input = this.detect();
-      var output = (this.side == 1 ? this.game.leftBrain : this.game.rightBrain).activate(input);
+      var output = (this.side == 1 ? this.game.leftBrain : alreadyTrainedBrain).activate(input);
 
       this.vy = output[0];
 
       var newY = constrain(this.y + this.vy, this.height / 2, height - this.height / 2);
 
       var diff = Math.abs(newY - this.y);
-      (this.side == 1 ? this.game.leftBrain : this.game.rightBrain).score -= diff / 200.0;
+      this.distanceTraveled += diff;
+
+      // reduce points for moving a lot but add points for making other paddle move a lot
+      this.game.leftBrain.score += (this.side == 1 ? -1 : 1) * diff / 500.0;
+      updateHighestScore(this.game.leftBrain.score);
     }
 
     this.y = newY;

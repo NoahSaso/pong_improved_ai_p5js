@@ -71,12 +71,12 @@ function getPopulationFromFile(newPopArray) {
 
 function startEvaluation() {
   games = [];
-  for (var i = 0; i < neat.population.length; i += 2) {
+  for (var i = 0; i < neat.population.length; i += 1) {
     let leftGenome = neat.population[i];
-    let rightGenome = neat.population[i + 1];
-    games.push(new Game(leftGenome, rightGenome));
+    games.push(new Game(leftGenome));
   }
   baseFrame = frameCount;
+  curHighestScore = 0;
 }
 
 function endEvaluation() {
