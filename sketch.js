@@ -26,7 +26,7 @@ var endEvalButton;
 
 var baseFrame = 0;
 
-var END_FRAME_COUNT = 600;
+var END_FRAME_COUNT = 750;
 
 var loadingFile = false;
 
