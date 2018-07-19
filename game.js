@@ -4,8 +4,10 @@ function Game(leftGenome, rightGenome) {
   this.leftBrain = leftGenome;
   this.leftBrain.score = 0;
 
-  this.rightBrain = rightGenome;
-  this.rightBrain.score = 0;
+  if (rightGenome) {
+    this.rightBrain = rightGenome;
+    this.rightBrain.score = 0;
+  }
 
   this.ball = new Ball(this);
   this.leftPaddle = new Paddle(30, 1, this);

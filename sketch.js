@@ -9,7 +9,7 @@ var isPersonPlaying = false,
 var ballSpeed = 6;
 var randomBounceRate = 0.2;
 
-var populationSize = 750;
+var populationSize = 700;
 
 var ballSpeedP, ballSpeedSlider;
 var populationSizeP, populationSizeSlider;
@@ -155,7 +155,10 @@ function draw() {
     for (var j = 0; j < ballSpeed; j++) {
       games[i].update();
     }
-    games[i].show();
+    // only show first 100 to save processing power
+    if (i < 100) {
+      games[i].show();
+    }
   }
 }
 
