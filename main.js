@@ -9,6 +9,8 @@ var ELITISM_RATE = 0.1;
 
 var USE_TRAINED_POP = false; // use already trained population
 
+var populationSize = 500;
+
 function initNeat(isResetting) {
   if (isResetting) {
     var oldPop = neat.population;

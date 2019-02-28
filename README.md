@@ -7,7 +7,7 @@ This is a fork of my other repository (pong_ai_p5js) with the goal of creating P
 
 Mess with it here:
 
-[http://htmlpreview.github.io/?https://github.com/NoahSaso/pong_improved_ai_p5js/blob/master/index.html](http://htmlpreview.github.io/?https://github.com/NoahSaso/pong_improved_ai_p5js/blob/master/index.html)
+[https://noahsaso.github.io/pong_improved_ai_p5js](https://noahsaso.github.io/pong_improved_ai_p5js)
 
 Instructions
 ============
